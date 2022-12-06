@@ -48,7 +48,11 @@ func (*Struct) Build(gen Generator, ctx *MethodContext, sourceID *xtype.JenID, s
 		if def, ok := ctx.ExtendMapping[targetField.Name()]; ok {
 			params := []jen.Code{}
 			if def.Source != nil {
-				if def.Source.T.String() != source.T.String() {
+				defSourceName := def.Source.T.String()
+				if def.Source.Pointer {
+					defSourceName = strings.TrimPrefix(defSourceName, "*")
+				}
+				if defSourceName != source.T.String() {
 					cause := fmt.Sprintf("cannot not use\n\t%s\nbecause source type mismatch\n\nExtend method param type: %s\nConverter source type: %s", def.ID, def.Source.T.String(), source.T.String())
 					return nil, nil, NewError(cause).Lift(&Path{
 						Prefix:     ".",
@@ -58,7 +62,11 @@ func (*Struct) Build(gen Generator, ctx *MethodContext, sourceID *xtype.JenID, s
 						TargetType: targetField.Type().String(),
 					})
 				}
-				params = append(params, sourceID.Code.Clone())
+				if def.Source.Pointer {
+					params = append(params, jen.Op("&").Add(sourceID.Code.Clone()))
+				} else {
+					params = append(params)
+				}
 			}
 
 			if def.Target.T.String() != targetFieldType.T.String() {
