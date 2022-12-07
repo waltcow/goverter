@@ -87,6 +87,13 @@ func (*Struct) Build(gen Generator, ctx *MethodContext, sourceID *xtype.JenID, s
 			continue
 		}
 
+		if sourceKey, ok := ctx.PipeMapping[targetField.Name()]; ok {
+			if def, ok := ctx.ExtendMapping[sourceKey+"@"+targetField.Name()]; ok {
+				stmt = append(stmt, jen.Id(name).Dot(targetField.Name()).Op("=").Add(def.Call.Clone().Call(sourceID.Code.Clone().Dot(sourceKey))))
+				continue
+			}
+		}
+
 		// To find out the source code for an error message like "error setting field PostalCode", people sometimes
 		// search their codebase/repo for the exact message match, in full. Inline the error message AS IS into the
 		// generated code to satisfy this search and speed up the troubleshooting efforts.

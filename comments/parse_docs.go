@@ -53,6 +53,8 @@ type Method struct {
 	IdentityMapping map[string]struct{}
 	// mapping function to source
 	ExtendMapping map[string]string
+	// mapping function to target
+	PipeMapping map[string]string
 }
 
 // ParseDocs parses the docs for the given pattern.
@@ -217,6 +219,7 @@ func parseMethodComment(comment string) (Method, error) {
 		IgnoredFields:   map[string]struct{}{},
 		IdentityMapping: map[string]struct{}{},
 		ExtendMapping:   map[string]string{},
+		PipeMapping:     map[string]string{},
 	}
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -244,11 +247,16 @@ func parseMethodComment(comment string) (Method, error) {
 				}
 				continue
 			case "mapExtend":
-				if len(fields) != 3 {
-					return m, fmt.Errorf("invalid %s:mapExtend must have two parameter", prefix)
+				if len(fields) == 3 {
+					m.ExtendMapping[fields[1]] = fields[2] // targetName, MethodName
+					continue
+				} else if len(fields) == 4 {
+					m.ExtendMapping[fields[1]+"@"+fields[2]] = fields[3] // sourceName@targetName,MethodName
+					m.PipeMapping[fields[2]] = fields[1]
+					continue
+				} else {
+					return m, fmt.Errorf("invalid %s:mapExtend must have two/three parameter", prefix)
 				}
-				m.ExtendMapping[fields[1]] = fields[2]
-				continue
 			case "matchIgnoreCase":
 				if len(fields) != 1 {
 					return m, fmt.Errorf("invalid %s:matchIgnoreCase, parameters not supported", prefix)

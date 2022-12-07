@@ -14,10 +14,24 @@ func (c *ConverterImpl) Convert(source *mapextend.Input) *mapextend.Output {
 	}
 	return pMapextendOutput
 }
+func (c *ConverterImpl) ConvertMeta(source *mapextend.Input) *mapextend.OutputMeta {
+	var pMapextendOutputMeta *mapextend.OutputMeta
+	if source != nil {
+		mapextendOutputMeta := c.mapextendInputToMapextendOutputMeta(*source)
+		pMapextendOutputMeta = &mapextendOutputMeta
+	}
+	return pMapextendOutputMeta
+}
 func (c *ConverterImpl) mapextendInputToMapextendOutput(source mapextend.Input) mapextend.Output {
 	var mapextendOutput mapextend.Output
 	mapextendOutput.ID = source.ID
 	mapextendOutput.FullName = mapextend.ExtendFullName(&source)
 	mapextendOutput.Age = mapextend.DefaultAge()
 	return mapextendOutput
+}
+func (c *ConverterImpl) mapextendInputToMapextendOutputMeta(source mapextend.Input) mapextend.OutputMeta {
+	var mapextendOutputMeta mapextend.OutputMeta
+	mapextendOutputMeta.ID = source.ID
+	mapextendOutputMeta.FullName = mapextend.ExtendWithSpecName(source.LastName)
+	return mapextendOutputMeta
 }

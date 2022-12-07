@@ -5,6 +5,9 @@ type Converter interface {
 	// goverter:mapExtend FullName ExtendFullName
 	// goverter:mapExtend Age DefaultAge
 	Convert(source *Input) *Output
+
+	// goverter:mapExtend LastName FullName ExtendWithSpecName
+	ConvertMeta(source *Input) *OutputMeta
 }
 
 type Input struct {

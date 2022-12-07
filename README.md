@@ -248,7 +248,7 @@ type Output struct {
 
 With `goverter:mapExtend` you can map methods to struct fields.
 
-`goverter:mapExtend` takes 2 parameters.
+`goverter:mapExtend` takes 2 or 3 parameters.
 
 1. target field path
 1. local method name
@@ -262,6 +262,9 @@ type Converter interface {
     // goverter:mapExtend FullName ExtendFullName
     // goverter:mapExtend Age DefaultAge
     Convert(source Input) Output
+	
+    // goverter:mapExtend LastName FullName ExtendWithSpecName
+    ConvertMeta(source *Input) *OutputMeta
 }
 
 type Input struct {
@@ -274,10 +277,20 @@ type Output struct {
     FullName string
     Age int
 }
+
+type OutputMeta struct {
+    ID       int
+    FullName string
+}
+
 func ExtendFullName(source Input) string {
     return source.FirstName + " " + source.LastName
 }
 func DefaultAge() int { return 42 }
+
+func ExtendWithSpecName(name string) string {
+    return name + " Spec"
+}
 ```
 
 This will generate a method like this:
