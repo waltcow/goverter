@@ -28,6 +28,7 @@ type Generator interface {
 type MethodContext struct {
 	*namer.Namer
 	Mapping                map[string]string
+	PipeMapping            map[string]string
 	ExtendMapping          map[string]*ExtendMethod
 	IgnoredFields          map[string]struct{}
 	IgnoreUnexportedFields bool

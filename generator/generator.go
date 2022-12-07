@@ -24,6 +24,7 @@ type methodDefinition struct {
 	Mapping         map[string]string
 	IgnoredFields   map[string]struct{}
 	IdentityMapping map[string]struct{}
+	PipeMapping     map[string]string
 	ExtendMapping   map[string]*builder.ExtendMethod
 	MatchIgnoreCase bool
 	WrapErrors      bool
@@ -90,16 +91,28 @@ func (g *generator) registerMethod(scope *types.Scope, methodType *types.Func, m
 		IgnoredFields:          methodComments.IgnoredFields,
 		IdentityMapping:        methodComments.IdentityMapping,
 		ExtendMapping:          map[string]*builder.ExtendMethod{},
+		PipeMapping:            map[string]string{},
 		ReturnError:            returnError,
 		ReturnTypeOrigin:       methodType.FullName(),
 	}
 
 	for field, target := range methodComments.ExtendMapping {
-		def, err := g.parseMapExtend(scope, target)
-		if err != nil {
-			return err
+		if strings.Contains(field, "@") {
+			// sourceName@targetName
+			def, err := g.parseMapExtend(scope, target)
+			if err != nil {
+				return err
+			}
+			m.ExtendMapping[field] = def
+			s := strings.Split(field, "@")
+			m.PipeMapping[s[1]] = s[0]
+		} else {
+			def, err := g.parseMapExtend(scope, target)
+			if err != nil {
+				return err
+			}
+			m.ExtendMapping[field] = def
 		}
-		m.ExtendMapping[field] = def
 	}
 
 	g.lookup[xtype.Signature{
@@ -170,6 +183,7 @@ func (g *generator) buildMethod(method *methodDefinition, errWrapper builder.Err
 		Namer:                  namer.New(),
 		Mapping:                method.Mapping,
 		ExtendMapping:          method.ExtendMapping,
+		PipeMapping:            method.PipeMapping,
 		IgnoredFields:          method.IgnoredFields,
 		IgnoreUnexportedFields: method.IgnoreUnexportedFields,
 		IdentityMapping:        method.IdentityMapping,
@@ -285,6 +299,7 @@ func (g *generator) Build(
 			Source:                 xtype.TypeOf(source.T),
 			Target:                 xtype.TypeOf(target.T),
 			Mapping:                map[string]string{},
+			PipeMapping:            map[string]string{},
 			IgnoredFields:          map[string]struct{}{},
 			IgnoreUnexportedFields: g.ignoreUnexportedFields,
 			Call:                   jen.Id(xtype.ThisVar).Dot(name),
@@ -298,6 +313,7 @@ func (g *generator) Build(
 			method.ExtendMapping = ctx.ExtendMapping
 			method.IdentityMapping = ctx.IdentityMapping
 		}
+		method.PipeMapping = ctx.PipeMapping
 
 		g.lookup[xtype.Signature{Source: source.T.String(), Target: target.T.String()}] = method
 		g.namer.Register(method.Name)
