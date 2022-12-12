@@ -51,6 +51,7 @@ type generator struct {
 	// workingDir is a working directory, can be empty
 	workingDir             string
 	ignoreUnexportedFields bool
+	ignoreCaseGlobal       bool
 }
 
 func (g *generator) registerMethod(scope *types.Scope, methodType *types.Func, methodComments comments.Method) error {
@@ -187,7 +188,7 @@ func (g *generator) buildMethod(method *methodDefinition, errWrapper builder.Err
 		IgnoredFields:          method.IgnoredFields,
 		IgnoreUnexportedFields: method.IgnoreUnexportedFields,
 		IdentityMapping:        method.IdentityMapping,
-		MatchIgnoreCase:        method.MatchIgnoreCase,
+		MatchIgnoreCase:        method.MatchIgnoreCase || g.ignoreCaseGlobal,
 		WrapErrors:             method.WrapErrors,
 		TargetType:             method.Target,
 		Signature:              xtype.Signature{Source: method.Source.T.String(), Target: method.Target.T.String()},

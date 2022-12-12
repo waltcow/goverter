@@ -19,6 +19,9 @@ func main() {
 	ignoreUnexportedFields := flag.Bool("ignoreUnexportedFields", false,
 		"if set, unexported fields on structs are ignored")
 
+	ignoreCaseGlobal := flag.Bool("ignoreCaseGlobal", false,
+		"if set, ignore case when converting struct fields")
+
 	flag.Parse()
 
 	args := flag.Args()
@@ -39,6 +42,7 @@ func main() {
 		PackagePath:             *packagePath,
 		WrapErrors:              *wrapErrors,
 		IgnoredUnexportedFields: *ignoreUnexportedFields,
+		IgnoreCaseGlobal:        *ignoreCaseGlobal,
 	})
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)

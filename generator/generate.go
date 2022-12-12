@@ -19,6 +19,7 @@ type Config struct {
 	WorkingDir             string
 	WrapErrors             bool
 	IgnoreUnexportedFields bool
+	IgnoreCaseGlobal       bool
 }
 
 // BuildSteps that'll used for generation.
@@ -55,6 +56,7 @@ func Generate(pattern string, mapping []comments.Converter, config Config) (*jen
 			workingDir:             config.WorkingDir,
 			wrapErrors:             config.WrapErrors || converter.Config.WrapErrors,
 			ignoreUnexportedFields: config.IgnoreUnexportedFields,
+			ignoreCaseGlobal:       config.IgnoreCaseGlobal,
 		}
 		interf := obj.Type().Underlying().(*types.Interface)
 

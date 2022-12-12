@@ -31,7 +31,7 @@ func (c *ConverterImpl) mapextendInputToMapextendOutput(source mapextend.Input) 
 }
 func (c *ConverterImpl) mapextendInputToMapextendOutputMeta(source mapextend.Input) mapextend.OutputMeta {
 	var mapextendOutputMeta mapextend.OutputMeta
-	mapextendOutputMeta.ID = source.ID
+	mapextendOutputMeta.Id = source.ID
 	mapextendOutputMeta.FullName = mapextend.ExtendWithSpecName(source.LastName)
 	return mapextendOutputMeta
 }

@@ -10,9 +10,10 @@ import (
 func TestGen(t *testing.T) {
 
 	err := goverter.GenerateConverterFile("./generated/generated.go", goverter.GenerateConfig{
-		PackageName: "generated",
-		ScanDir:     "github.com/jmattheis/goverter/example/mapextend",
-		PackagePath: "",
+		PackageName:      "generated",
+		ScanDir:          "github.com/jmattheis/goverter/example/mapextend",
+		PackagePath:      "",
+		IgnoreCaseGlobal: true,
 	})
 
 	if err != nil {

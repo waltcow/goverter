@@ -22,7 +22,7 @@ type Output struct {
 }
 
 type OutputMeta struct {
-	ID       int
+	Id       int
 	FullName string
 }
 
